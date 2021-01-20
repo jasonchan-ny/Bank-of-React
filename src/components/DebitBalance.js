@@ -12,6 +12,7 @@ class DebitBalance extends Component {
                 description: "",
                 amount: "",
                 date: "",
+                // debitData: this.props.debitData
             }
         }
         this.handleChange = this.handleChange.bind(this)
@@ -19,14 +20,24 @@ class DebitBalance extends Component {
     }
 
     handleChange = (e) => {
+        const update = {...this.state.debit};
+        const input = e.target.name;
         const value = e.target.value
-        this.setState({
-            [e.target.name]: value,
-        })
+
+        update[input] = value;
+        if(input === "amount"){
+            update.amount = Number(value);
+        }
+        this.setState({debit: update});
     }
+
     handleSubmit = (e) => {
         e.preventDefault();
-        this.props.getDebit(this.state.debit)
+        const arr = this.props.debitData;
+        arr.unshift({
+            description: this.state.description,
+            amount: this.state.amount
+        })
     }
 
     render() {
@@ -57,7 +68,7 @@ class DebitBalance extends Component {
                     </form>
                 </fieldset>
 
-                {this.debitList(this.props.data)}
+                {this.debitList(this.props.debitData)}
                 
                 {/* {this.state.data.map((data) => (
                 <div key = {data.id}>
@@ -71,11 +82,11 @@ class DebitBalance extends Component {
         );
     }
 
-debitList(data)
+debitList(debitData)
 {
     let arr = [];
 
-    data.forEach((element, index) => {
+    debitData.forEach((element, index) => {
         const id = element.id;
         const description = element.description;
         const amount = element.amount;
