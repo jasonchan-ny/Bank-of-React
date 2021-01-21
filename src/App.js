@@ -29,7 +29,7 @@ class App extends React.Component {
     this.getCredit = this.getCredit.bind(this)
   }
 
-  componentDidMount() {
+  componentDidMount = async() => {
     this.getDebit();
     this.getCredit();
   }
@@ -78,38 +78,50 @@ class App extends React.Component {
     })
   }
 
-  componentDidUpdate(prevProps, prevState) {
-    if(prevState.debitData !== this.state.debitData){
-      let debitBalance = 0;
-      for(let object of this.state.debitData){
-        debitBalance += object.amount;
-      }
-      debitBalance = debitBalance.toFixed(2);
+  // componentDidUpdate(prevProps, prevState) {
+  //   if(prevState.debitData !== this.state.debitData){
+  //     let debitBalance = 0;
+  //     for(let object of this.state.debitData){
+  //       debitBalance += object.amount;
+  //     }
+  //     debitBalance = debitBalance.toFixed(2);
 
-      this.setState({debitBalance,});
-    }
-    if(prevState.creditData !== this.state.creditData){
-      let creditBalance = 0;
-      for(let object of this.state.creditData){
-        creditBalance += object.amount;
-      }
-      creditBalance = creditBalance.toFixed(2);
+  //     this.setState({debitBalance,});
+  //   }
+  //   if(prevState.creditData !== this.state.creditData){
+  //     let creditBalance = 0;
+  //     for(let object of this.state.creditData){
+  //       creditBalance += object.amount;
+  //     }
+  //     creditBalance = creditBalance.toFixed(2);
 
-      this.setState({creditBalance,});
-    }
-  }
+  //     this.setState({creditBalance,});
+  //   }
+  // }
   
+  updateDebit = (debit) => {
+    const newDebit = [debit, ...this.state.debitData]
+    this.setState({debitData: newDebit})
+    this.setState({accountBalance: parseInt(this.state.accountBalance) + parseInt(debit.amount)})
+  }
+
+  updateCredit = (credit) => {
+    const newCredit = [credit, ...this.state.creditData]
+    this.setState({creditData: newCredit})
+    this.setState({accountBalance: parseInt(this.state.accountBalance) - parseInt(credit.amount)})
+  }
+
   mockLogin = (loginInfo) => {
     const newUser = {...this.state.currentUser}
     newUser.username = loginInfo.username
     this.setState({currentUser: newUser})
   }
   render() {
-    const HomeComponent = () => (<Home accountBalance={this.state.accountBalance}/>);
+    const HomeComponent = () => (<Home accountBalance = {this.state.accountBalance + this.state.debitBalance - this.state.creditBalance}/>);
     const UserProfileComponent = () => (<UserProfile username = {this.state.currentUser.username} joinDate = {this.state.currentUser.joinDate}/>);
     const LoginComponent = () => (<Login user = {this.state.currentUser} mockLogin = {this.mockLogin} {...this.props}/>)
-    const DebitComponent = () => (<Debit debitData = {this.state.debitData} accountBalance = {this.state.creditBalance - this.state.debitBalance}/>)
-    const CreditComponent = () => (<Credit creditData = {this.state.creditData} accountBalance = {this.state.creditBalance - this.state.debitBalance}/>)
+    const DebitComponent = () => (<Debit debitData = {this.state.debitData} updateDebit = {this.updateDebit} accountBalance = {this.state.accountBalance + this.state.debitBalance - this.state.creditBalance}/>)
+    const CreditComponent = () => (<Credit creditData = {this.state.creditData} updateCredit = {this.updateCredit} accountBalance = {this.state.accountBalance + this.state.debitBalance - this.state.creditBalance}/>)
 
     return(
       <Router>

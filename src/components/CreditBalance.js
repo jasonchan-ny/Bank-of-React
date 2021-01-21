@@ -1,45 +1,53 @@
 import React, {Component} from 'react'
 import {Link} from 'react-router-dom'
 import AccountBalance from './AccountBalance'
-import CreditItem from './CreditItem'
 
 class CreditBalance extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            credit: {
+            creditData: {
                 id: "",
                 description: "",
                 amount: "",
                 date: "",
-            }
+            },
         }
         this.handleChange = this.handleChange.bind(this)
         this.handleSubmit = this.handleSubmit.bind(this)
     }
 
     handleChange = (e) => {
-        const update = {...this.state.credit};
-        const input = e.target.name;
-        const value = e.target.value
+        // alert(e.target.name)
+        const name = e.target.name;
+        const value = e.target.value;
+        const date = Date().toLocaleString();
 
-        update[input] = value;
-        if(input === "amount"){
-            update.amount = Number(value);
-        }
-        this.setState({credit: update});
+        let creditData = this.state.creditData;
+        creditData[name] = value
+        creditData.date = date
+        this.setState({
+            creditData
+        })
     }
 
     handleSubmit = (e) => {
         e.preventDefault();
-        const arr = this.props.creditData;
-        arr.unshift({
-            description: this.state.description,
-            amount: this.state.amount
-        })
+        this.props.updateCredit(this.state.creditData)
     }
 
     render() {
+        let displayCredits = (
+            this.props.creditData.map((credit) => {
+                return (
+                    <div className = "credit-item" key = {credit.id}>
+                        <h3> {credit.description}</h3>
+                        <li> Amount: {credit.amount.toLocaleString("en-US",{style: "currency", currency: "USD"})} </li>
+                        <li> Date: {credit.date}</li>
+                    </div>
+                );
+            })
+        )
         return(
             <div>
                 <nav>
@@ -58,49 +66,18 @@ class CreditBalance extends Component {
                         <label>
                             Description:
                         </label>
-                            <input type = "text" name = "description" placeholder = "Enter item" onChange = {this.handleChange}/>
+                            <input type = "text" name = "description" placeholder = "Enter item" onChange = {this.handleChange} value = {this.state.creditData.description}/>
                         <label>
                             Amount:
                         </label>
-                            <input type = "number" name = "amount" placeholder = "0.00" onChange = {this.handleChange}/>
+                            <input type = "number" name = "amount" placeholder = "0.00" onChange = {this.handleChange} value = {this.state.creditData.amount}/>
                             <button type = "submit"> Submit </button>
                     </form>
                 </fieldset>
-
-                {this.creditList(this.props.creditData)}
-                
-                {/* {this.state.debitData.map((data) => (
-                <div key = {data.id}>
-                    Description: {data.description} <p></p>
-                    Amount: {data.amount} <p></p>
-                    Date: {data.date} <p></p>
-                </div>
-            ))}   */}
-
+                {displayCredits}
             </div>
         );
     }
-
-creditList(creditData)
-{
-    let arr = [];
-
-    creditData.forEach((element, index) => {
-        const id = element.id;
-        const description = element.description;
-        const amount = element.amount;
-        const date = element.date;
-        
-        arr.push(
-        <CreditItem
-        // key = {index.toString()}
-        id = {id}
-        description = {description}
-        amount = {amount}
-        date = {date}
-        />)
-    })
-    return arr;
-}}
+}
 
 export default CreditBalance
