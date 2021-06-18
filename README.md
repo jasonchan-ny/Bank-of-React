@@ -17,7 +17,7 @@
 
 ## App Walkthrough GIF
 
-<img src="https://recordit.co/EuzMxUVGSC" width=250><br>
+<img src="https://recordit.co/EuzMxUVGSC.gif" width=250><br>
 
 ## Project Setup
 
